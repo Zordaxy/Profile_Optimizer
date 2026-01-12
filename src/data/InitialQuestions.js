@@ -8,12 +8,6 @@ export default {
       multiline: false,
     },
     {
-      id: "profileData",
-      text: "Current Profile / Bio Text",
-      required: true,
-      multiline: true,
-    },
-    {
       id: "targetRole",
       text: "Target Role / Industry",
       required: false,
@@ -27,4 +21,3 @@ export default {
     },
   ],
 };
-

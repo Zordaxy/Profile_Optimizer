@@ -9,28 +9,29 @@ import { DIALOG_TYPE } from "./dialogContext.jsx";
  */
 export async function optimizeProfile(additionalRequest = "") {
   try {
-    const profileData = localStorage.getItem("profileData") || "";
     const targetRole = localStorage.getItem("targetRole") || "";
     const keySkills = localStorage.getItem("keySkills") || "";
+    const userProfile = localStorage.getItem("userProfile") || "";
 
     const prompt = optimizeProfilePrompt(
-      profileData,
+      userProfile,
       targetRole,
       keySkills,
-      additionalRequest
+      additionalRequest,
+      userProfile
     );
 
     // Show loading state
     window.updateResultData?.({ loading: true, content: "" });
 
-    const response = await apiRequest(prompt, profileData);
+    const response = await apiRequest(prompt);
 
     // Show result in modal
     const title = "Profile Optimization Result";
     showModal(title, null, null, DIALOG_TYPE.RESULT, {
       loading: false,
       content: response,
-      originalRequest: { profileData, targetRole, keySkills },
+      originalRequest: { userProfile, targetRole, keySkills },
     });
 
     return response;
@@ -54,7 +55,7 @@ export async function optimizeProfile(additionalRequest = "") {
 export async function refineRecommendation(additionalRequest, previousResult) {
   try {
     const { originalRequest } = previousResult;
-    const { profileData, targetRole, keySkills } = originalRequest;
+    const { userProfile, targetRole, keySkills } = originalRequest;
 
     // Update loading state
     window.updateResultData?.({
@@ -63,14 +64,14 @@ export async function refineRecommendation(additionalRequest, previousResult) {
     });
 
     const prompt = optimizeProfilePrompt(
-      profileData,
+      userProfile,
       targetRole,
       keySkills,
       additionalRequest,
       previousResult.content
     );
 
-    const response = await apiRequest(prompt, profileData);
+    const response = await apiRequest(prompt);
 
     // Update result
     window.updateResultData?.({

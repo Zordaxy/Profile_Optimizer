@@ -1,32 +1,21 @@
 import initContent from "./initContent.jsx";
 import { gatherInitialInfo } from "./gatherInitialInfo.jsx";
 import { optimizeProfile } from "./handleOptimization.js";
-import { readProfile } from "./readProfile.js";
+// import { readProfile } from "./readProfile.js";
 
 /**
  * Listens for messages from the popup
  */
-chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.type === "START_OPTIMIZATION") {
-    // Initialize React dialog system
-    initContent();
+    (async () => {
+      // Initialize React dialog system
+      initContent();
 
-    // Gather initial info (API key, profile data)
-    await gatherInitialInfo();
+      await gatherInitialInfo();
 
-    const selector = document.querySelector(
-      '[data-view-name="identity-self-profile"]'
-    );
-    if (selector) {
-      window.location.href = selector.href;
-      return;
-    }
-
-    // Read and store profile data
-    readProfile();
-
-    // Start optimization
-    await optimizeProfile();
+      await optimizeProfile();
+    })();
   }
 
   if (request.type === "READ_STORAGE") {
@@ -38,10 +27,40 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
     Object.entries(request.data).forEach(([key, value]) => {
       localStorage.setItem(key, value);
     });
+    sendResponse({ success: true });
+  }
+
+  if (request.type === "READ_DOCUMENT") {
+    const html = slimDomForAI();
+    sendResponse({ html });
   }
 
   return true;
 });
+
+function slimDomForAI() {
+  const main = document.body;
+  const clone = main.cloneNode(true);
+
+  clone
+    .querySelectorAll("script,style,link,svg,noscript,iframe,canvas")
+    .forEach((n) => n.remove());
+
+  clone.querySelectorAll("*").forEach((el) => {
+    el.removeAttribute("class");
+    el.removeAttribute("style");
+    el.removeAttribute("componentkey");
+    el.removeAttribute("data-view-name");
+    el.removeAttribute("data-view-tracking-scope");
+  });
+
+  let html = clone.innerHTML
+    .replace(/<!--[\s\S]*?-->/g, "") // comments
+    .replace(/\s+/g, " ") // whitespace
+    .trim();
+
+  return `<article>${html}</article>`;
+}
 
 // Initialize React on page load
 initContent();

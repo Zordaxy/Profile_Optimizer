@@ -1,26 +1,22 @@
-export async function apiRequest(prompt, content) {
-  console.log("apiRequest", prompt, content);
-  return;
+export async function apiRequest(prompt, options = {}) {
+  const apiKey = options.apiKey || localStorage.getItem("openAiKey");
+  const temperature = options.temperature ?? 0.7;
+
+  if (!apiKey) {
+    throw new Error("OpenAI API key not available");
+  }
+
   try {
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    const response = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("openAiKey")}`,
+        Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: "gpt-4o",
-        temperature: 0.7,
-        messages: [
-          {
-            role: "system",
-            content: prompt,
-          },
-          {
-            role: "user",
-            content,
-          },
-        ],
+        model: "gpt-4.1",
+        temperature,
+        input: prompt,
       }),
     });
 
@@ -28,7 +24,8 @@ export async function apiRequest(prompt, content) {
     if (data.error) {
       throw new Error(data.error.message);
     }
-    return data.choices?.[0]?.message?.content.trim();
+
+    return data.output?.[0]?.content?.[0]?.text?.trim();
   } catch (error) {
     console.error("OpenAI API Error:", error);
     throw error;
