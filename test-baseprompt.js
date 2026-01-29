@@ -15,7 +15,7 @@ async function testBasePrompt() {
   console.log('🚀 Testing basePrompt with OpenAI API\n');
 
   // Get API key from environment variable
-  const apiKey = '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'
+  const apiKey = '' // Add the public key here before testing
 
   if (!apiKey) {
     console.error('❌ Error: OPENAI_API_KEY environment variable not set');
