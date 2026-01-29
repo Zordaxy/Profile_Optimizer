@@ -8,7 +8,7 @@ Profile Optimizer is a Chrome extension designed to help professionals enhance t
 
 Whether you're job hunting, building your personal brand, or simply want a more polished professional presence, this tool gives you AI-powered insights without leaving LinkedIn.
 
-![Profile Optimization Result](screenshot.png)
+![Profile Optimization Result](./screenshot.png)
 
 ## Features
 
