@@ -7,7 +7,7 @@ export async function apiRequest(prompt, options = {}) {
   }
 
   try {
-    const response = await fetch("https://api.openai.com/v1/responses", {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -16,7 +16,12 @@ export async function apiRequest(prompt, options = {}) {
       body: JSON.stringify({
         model: "gpt-4.1",
         temperature,
-        input: prompt,
+        messages: [
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
       }),
     });
 
@@ -25,7 +30,7 @@ export async function apiRequest(prompt, options = {}) {
       throw new Error(data.error.message);
     }
 
-    return data.output?.[0]?.content?.[0]?.text?.trim();
+    return data.choices?.[0]?.message?.content?.trim();
   } catch (error) {
     console.error("OpenAI API Error:", error);
     throw error;
