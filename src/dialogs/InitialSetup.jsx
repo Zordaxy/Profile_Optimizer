@@ -56,8 +56,7 @@ export default function InitialSetup() {
     <form onSubmit={handleSubmit}>
       <DialogContent>
         <DialogContentText sx={{ mb: 2 }}>
-          Set up your profile optimizer. Enter your OpenAI API key and the profile
-          information you want to optimize.
+          Enter your OpenAI API (persisted in localStorage)
         </DialogContentText>
 
         {InitialQuestions.questions.map((question) => (

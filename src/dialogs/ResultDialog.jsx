@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   DialogContent,
   DialogActions,
@@ -13,6 +13,8 @@ import {
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import styled from "styled-components";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { useDialog } from "../content-script/dialogContext.jsx";
 import { refineRecommendation } from "../content-script/handleOptimization.js";
 
@@ -21,9 +23,90 @@ const ResultBox = styled(Box)`
   border-radius: 8px;
   padding: 16px;
   margin-bottom: 16px;
-  white-space: pre-wrap;
   max-height: 400px;
   overflow-y: auto;
+
+  /* Markdown styling */
+  h1, h2, h3, h4, h5, h6 {
+    margin-top: 16px;
+    margin-bottom: 8px;
+    font-weight: 600;
+    line-height: 1.25;
+    color: #1976d2;
+  }
+
+  h1 { font-size: 2em; border-bottom: 1px solid #e0e0e0; padding-bottom: 8px; }
+  h2 { font-size: 1.5em; border-bottom: 1px solid #e0e0e0; padding-bottom: 8px; }
+  h3 { font-size: 1.25em; }
+  h4 { font-size: 1.1em; }
+
+  p {
+    margin-bottom: 12px;
+    line-height: 1.6;
+  }
+
+  ul, ol {
+    margin-bottom: 12px;
+    padding-left: 24px;
+  }
+
+  li {
+    margin-bottom: 4px;
+  }
+
+  strong {
+    font-weight: 600;
+    color: #000;
+  }
+
+  em {
+    font-style: italic;
+  }
+
+  code {
+    background-color: #e0e0e0;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+  }
+
+  pre {
+    background-color: #2d2d2d;
+    color: #f8f8f2;
+    padding: 12px;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin-bottom: 12px;
+  }
+
+  pre code {
+    background-color: transparent;
+    padding: 0;
+    color: inherit;
+  }
+
+  blockquote {
+    border-left: 4px solid #1976d2;
+    padding-left: 16px;
+    margin-left: 0;
+    margin-bottom: 12px;
+    color: #666;
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid #e0e0e0;
+    margin: 16px 0;
+  }
+
+  a {
+    color: #1976d2;
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 `;
 
 const CustomTextField = styled(TextField)`
@@ -90,17 +173,21 @@ export default function ResultDialog() {
             </Box>
 
             <ResultBox>
-              <Typography
-                variant="body1"
-                component="pre"
-                sx={{
-                  fontFamily: "inherit",
-                  margin: 0,
-                  color: isError ? "error.main" : "text.primary",
-                }}
-              >
-                {content}
-              </Typography>
+              {isError ? (
+                <Typography
+                  variant="body1"
+                  sx={{
+                    color: "error.main",
+                    margin: 0,
+                  }}
+                >
+                  {content}
+                </Typography>
+              ) : (
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {content}
+                </ReactMarkdown>
+              )}
             </ResultBox>
 
             <CustomTextField
